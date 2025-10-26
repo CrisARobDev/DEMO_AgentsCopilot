@@ -144,7 +144,7 @@ class UserServiceTest {
         // Arrange
         UserRequest updateRequest = new UserRequest("johndoe", "john.new@example.com", "John", "Smith");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.existsByEmail(updateRequest.getEmail())).thenReturn(false);
+        when(userRepository.findByEmail(updateRequest.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // Act

@@ -100,15 +100,23 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         // Check if username is being changed and if it's already taken by another user
-        if (!user.getUsername().equals(userRequest.getUsername()) && 
-            userRepository.existsByUsername(userRequest.getUsername())) {
-            throw new DuplicateResourceException("User", "username", userRequest.getUsername());
+        if (!user.getUsername().equals(userRequest.getUsername())) {
+            userRepository.findByUsername(userRequest.getUsername())
+                .ifPresent(existingUser -> {
+                    if (!existingUser.getId().equals(id)) {
+                        throw new DuplicateResourceException("User", "username", userRequest.getUsername());
+                    }
+                });
         }
 
         // Check if email is being changed and if it's already taken by another user
-        if (!user.getEmail().equals(userRequest.getEmail()) && 
-            userRepository.existsByEmail(userRequest.getEmail())) {
-            throw new DuplicateResourceException("User", "email", userRequest.getEmail());
+        if (!user.getEmail().equals(userRequest.getEmail())) {
+            userRepository.findByEmail(userRequest.getEmail())
+                .ifPresent(existingUser -> {
+                    if (!existingUser.getId().equals(id)) {
+                        throw new DuplicateResourceException("User", "email", userRequest.getEmail());
+                    }
+                });
         }
 
         user.setUsername(userRequest.getUsername());
